@@ -1,0 +1,813 @@
+---
+title: "Introductory Statistics with R - Chapter 2"
+author: "Arthur Ryman"
+date: "February 12, 2016"
+output: slidy_presentation
+---
+
+## CKME 132 Data Analytics: Basic Methods
+
+### Introductory Statistics with R
+### Chapter 2: The R environment
+
+<img src="http://ryersonu-datasciencelab.github.io/courses/images/chang-school-logo.png" style="width:2in" />
+
+## Introduction
+
+- this presentation is based on _Introductory Statistics with R_, _Chapter 2: The R environment_
+- this is an R Markdown presentation
+    - Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents
+    - R Markdown let's you combine R input and output, including graphs, with text
+    - for more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+## 2 The R environment
+
+- this chapter describes how to work with the R environment
+- it describes
+    - workspaces
+    - graphical devices and their parameters
+    - elementary programming
+    - data entry
+
+
+## 2.1 Session management
+
+- your interaction with R occurs within the context of a **session**
+- in RStudio there is
+    - a session associated with the console
+    - a temporary session created whenever you Knit an R markdown document
+
+## 2.1.1 The workspace
+
+- whenever you create a variable, it gets added to the workspace
+- list all the variables in your workspace using the `ls()` function
+
+```{r}
+ls()
+```
+
+- the result of `ls()` is a character vector of variable names
+- we haven't created any variables in this session yet so the list is empty
+- run all the commands we executed in Chapter 1
+
+```{r message=FALSE, results='hide'}
+library(knitr)
+knit('iswr-ch01.Rmd')
+```
+
+- now list the variables again to see what was created
+```{r}
+ls()
+```
+
+- you can remove unneeded variables using `rm()`
+- remove `height` and `weight`
+
+```{r}
+rm(height, weight)
+```
+
+- you can remove all variables from the workspace by giving `rm()` a list argument
+    - you can also remove variables using RStudio menu commands
+
+```{r eval=FALSE}
+rm(list=ls())
+```
+
+- by default, `ls()` omits variables that begin with a dot (.) since these are normally system variables
+- you can really list ALL the variables (but don't delete them!)
+
+```{r}
+ls(all=TRUE)
+```
+
+- you can save the state of your workspace and restore it later
+
+```{r eval=FALSE}
+save.image()
+```
+
+- by default the image is saved to a file named `.Rdata`
+		- you can also provide a file name
+- the R environment prompts you to save the image when you quit
+- the workspace image file `.Rdata` is loaded by default when you start a new session
+- you can save and load individual R objects using `save()` and `load()`
+
+```{r}
+bmi
+save(bmi, file='bmi.Rdata')
+bmi <- 1:3
+bmi
+load('bmi.Rdata')
+bmi
+```
+
+## 2.1.2 Textual Output
+
+- the workspace does not contain the output you generate
+- you can copy and paste output from the console
+- you can divert output to a file using `sink()`
+    - of course, it is better to use R markdown!
+
+```{r eval=FALSE}
+sink('myfile')
+ls()
+sink()
+```
+
+- R looks in the working directory if you don't specify the file path
+- get the working directory using `getwd()`
+
+```{r}
+getwd()
+```
+
+- set the working directory using `setwd()`
+
+```{r}
+(work.dir <- getwd())
+setwd('/Users')
+getwd()
+setwd(work.dir)
+getwd()
+```
+
+- the initial working directory depends on how you start R
+- you can configure RStudio to start in a specific working directory
+
+## 2.1.3 Scripting
+
+- the console is great for interactive exploration
+- when you are finished exploring you will want to store your R code in a file so you can repeat them easily
+- you can store R code in a plain `.R` script file or a `.Rmd` markdown file
+    - you can run a script file using `source()`
+    - you can run a markdown file using `knit()`
+- you can develop R code files interactively using a script editor
+    - the script editor lets you run individual lines of code
+
+- for example, consider the script `norm-hist.R`
+    - opens a PDF graphics device
+    - plots a histogram of the normal distribution
+    - closed the graphics device
+
+```{r}
+cat(readLines("norm-hist.R"), sep="\n" )
+```
+
+- run the script using `source()`, echoing the lines
+
+```{r}
+source('norm-hist.R', echo = TRUE)
+```
+
+- R maintains a history of all the commands you enter
+- display the most recent commands using `history()`
+- save and load the history using `savehistory()` and `loadhistory()`
+
+## 2.1.4 Getting help
+
+- R has many more commands than you can possibly memorize
+- R has an extensive built-in help system
+- use the RStudio menus or enter help commands in the console
+- launch the help browser using `help.start()`
+
+```{r, eval=FALSE}
+help.start()
+```
+
+- look up help for a specific function, e.g. `plot`
+
+```{r}
+help("plot")
+```
+
+- or use the shortcut
+
+```{r}
+?plot
+```
+
+- get a list of commands that refer to a topic
+
+```{r}
+apropos("mean")
+```
+
+- display a help page of commands that refer to a topic
+```{r}
+help.search("mean")
+```
+
+- read "An Introduction to R" which comes with the R distribution:
+    - <https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf>
+
+## 2.1.5 Packages
+
+- an R installation contains one or more **libraries** of **packages**
+- some packages are part of the basic installation
+- other packages can be downloaded from CRAN (more than 6,000)
+- you can create your own packages
+
+- a **library** is a folder on your disk
+- a **system library** is a library that is created when R is installed
+- you may not have file permission to modify the system libraries
+- you may be able to create private user libraries (see `help(".Library"))`
+
+- a package contains specialized function 
+    - not needed by everyone
+- a package may contain:
+    - R code
+    - data sets
+    - dynamically loadable native code (usually C or Fortran)
+    
+- you load a package using `library()`
+
+```{r}
+library(survival)
+```
+
+- loaded packages are not part of the workspace
+- you must reload any needed packages when you start a new session
+- you can remove a loaded package using `detach()`
+
+```{r}
+detach("package:survival")
+```
+
+## 2.1.6 Built-in data
+
+- many packages contain large data sets
+- to avoid excess memory consumption, many packages implement **lazy loading**
+- with lazy loading, the data set appears to be available but is not actually loaded into memory until the data is referenced for the first time
+    - e.g. `thuesen` in the `ISwR` package is available but not actually loaded
+- some packages require that you explicitly load data using `data()`
+
+```{r}
+data("thuesen")
+```
+
+- `data()` searches the data directories of the loaded packages for a file with the specified base name
+    - subdirectories named `data` are also searched
+- if a match is found then actions are performed depending on the file extension
+    - `.tab` files are read using `read.table()`
+    - `.R` files are executed using `source()`
+
+## 2.1.7 `attach` and `detach`
+
+- R maintains a **search path** of scopes for looking up variables
+
+```{r}
+search()
+```
+
+- `.GlobalEnv` (at position 1) is the set of variable defined in the workspace
+- when you reference a variable, R checks each scope in the search path for the variable and returns the first one it finds
+    - a variable in earlier scopes on the search path will **mask** variables with the same name in later scopes
+    - if R is searching for a variable of a specific type, e.g. a function, then it will skip variable of the same name that are of a different type
+    
+- you can abbreviate access to the components of a data frame by adding it to the search path using `attach()`
+
+```{r}
+attach(thuesen)
+search()
+```
+
+- R adds the data frame immediately after `.GlobalEnv`, i.e. at position 2
+- with `thuesen` on the search path, instead of writing `thuesen$blood.glucose`, write just `blood.glucose`
+```{r}
+blood.glucose
+```
+
+- attached data frames always come after the workspace on the search path
+- you can make R search a given data frame before the workspace by using `with()`
+
+```{r}
+with(thuesen, plot(blood.glucose, short.velocity))
+```
+
+- remove a data frame from the search path using `detach()`
+
+```{r}
+detach()
+search()
+```
+
+- by default, the data frame in position 2 is removed
+    - you can give `detach()` an argument to remove a specific data frame
+
+## 2.1.8 `subset`, `transform`, and `within`
+
+- R provides some additional functions to make referencing components of a data frame easier
+- use `subset()` to select a subset of the rows of a data frame based on a condition
+
+```{r}
+thue2 <- subset(thuesen, blood.glucose < 7)
+thue2
+```
+
+- you can also use `subset()` on a vector
+- this is the same as indexing the vector except that `NA` entries are excluded
+```{r}
+v1 <- c(1,2,3,NA,5,6,7)
+subset(v1, v1 < 6)
+```
+
+- `select()` has an argument `select` which let's you select which variables from the data frame to select
+
+```{r}
+subset(thuesen, blood.glucose < 7, select = short.velocity)
+```
+
+- use `transform()` to create new components of a data frame
+
+```{r}
+thue3 <- transform(thuesen, log.gluc=log(blood.glucose))
+head(thue3)
+```
+
+- `transform()` does not allow **chained** calculations
+    - the new variables can only depend on the existing variables
+- use `within()` for more complex transformations
+
+```{r}
+thue4 <- within(thuesen, {
+  log.gluc <- log(blood.glucose)
+  m <- mean(log.gluc)
+  centered.log.gluc <- log.gluc - m
+  rm(m)
+})
+head(thue4)
+```
+
+- `within()` collects all the variables defined in the **compound statement** and returns them in a data frame
+    - note how the intermediate variable `m` was removed using `rm()`
+
+
+## 2.2 The graphics subsystem
+
+- R lets you generate simple plots
+- you can superimpose a curve on it
+- you can modify the default behaviour
+    - add annotations
+    - change the axes
+    - use labels instead of numbers
+    - use irregularly placed tick marks
+- there other graphics packages, which are not covered in ISwR
+    - `grid`
+    - `lattice`
+    - `ggplot2`
+
+## 2.2.1 Plot layout
+
+- the R graphics model defines a figure region (for a single plot)
+    - central plotting region
+    - margins
+- coordinates in the plotting region are specified in **data units**
+- coordinates in the margins are specified in 
+    - **lines of text** perpendicular to the axis
+    - **data units** along the axis
+    
+- a standard **x-y plot** has
+    - an x-axis title
+    - a y-axis title
+    - a main title above the plot
+    - a subtitle below the plot
+
+```{r}
+x <- runif(50, 0, 2)
+y <- runif(50, 0, 2)
+plot(x, y, main="Main title", sub="subtitle", xlab="x-label", ylab="y-label")
+```
+
+- you can place additional points and lines in the plot either when the plot is created or after using `points()` and `lines()`
+- you can place text in the plot using `text()`
+    - use `abline()` to draw vertical and horizontal lines in this example
+
+```{r}
+plot(x,y)
+text(0.6,0.6, "text at (0.6,0.6)")
+abline(h=0.6,v=0.6)
+```
+
+- use `mtext()` to place text in the margins
+  - use line coordinates
+
+```{r}
+plot(x,y)
+for(side in 1:4) mtext(-1:4, side=side, at=.7, line=-1:4)
+mtext(paste("side", 1:4), side=1:4, line=-1, font=2)
+```
+
+## 2.2.2 Build a plot from pieces
+
+- high-level plots are composed of elements, each of which can be drawn separately with finer control
+- to achieve ultimate control, draw the plot without the element, then add it
+- the following code draws nothing but sets the coordinate system of the plot
+    - `type="n"` suppresses drawing the points
+    - `axes=F` suppresses drawing the axes and the box surrounding the plot
+
+```{r}
+plot(x,y, type="n", xlab="", ylab="", axes=F)
+```
+
+- now add the elements
+
+```{r}
+plot(x,y, type="n", xlab="", ylab="", axes=F)
+points(x,y)
+axis(1)
+axis(2, at=seq(0.2,1.8,0.2))
+box()
+title(main="Main title", sub="subtitle", xlab="x-label", ylab="y-label")
+```
+
+- plotting points with `type="n"` is also useful for establishing the overall coordinate system of the plot when you want to plot several groups of data
+- plot the entire set of points with `type="n"`
+- then plot each group using `points()` in a different colour
+- alternatively, plot all points at once using a vector argument for `col`
+
+## 2.2.3 Using `par`
+
+- use `par()` to set graphics parameters for multiple plots
+- some parameters can only be set using `par()
+- you can set the following
+    - line width and type
+    - character size and font
+    - colour
+    - style of axis calculation
+    - size of the plot and figure regions
+    - clipping
+    - etc.
+- you can divide a figure into subfigures using `mfrow` and `mfcol`
+
+- e.g. reduce the margin sizes from the default of `c(5,4,4,2)`
+```{r eval=FALSE}
+par(mar=c(4,4,2,2)+0.1)
+```
+
+## 2.2.4 Combining plots
+
+- combining plots requires some considerations in order to produce a good result
+- the following code is not good enough
+
+```{r}
+set.seed(42)
+x <- rnorm(100)
+hist(x,freq=F)
+curve(dnorm(x),add=T)
+```
+
+- the problem is that the peak of the curve may get clipped because its height was not taken into account in the histogram
+- the solution is to compute the actual limit of the y-axis
+
+```{r}
+h <- hist(x, plot=F)
+ylim <- range(0, h$density, dnorm(0))
+hist(x, freq=F, ylim=ylim)
+curve(dnorm(x), add=T)
+```
+
+## 2.3 R programming
+
+- the main focus of this book is using the available packages to do statistics
+- however, you can also write your own functions in R
+- this allows you to easily reuse code
+- as an illustration of the power of R programming, let's wrap the preceding plotting code in a function
+
+```{r}
+hist.with.normal <- function(x, xlab=deparse(substitute(x)), ...)
+{
+  h <- hist(x, plot=F, ...)
+  s <- sd(x)
+  m <- mean(x)
+  ylim <- range(0, h$density, dnorm(0, sd=s))
+  hist(x, freq=F, ylim=ylim, xlab=xlab, ...)
+  curve(dnorm(x,m,s), add=T)
+}
+```
+
+- the default value for `xlab` is set to the expression used for `x`
+- the `...` argument indicates other arguments which can then be passed to the other plot function calls
+- now let's call this function
+
+```{r}
+hist.with.normal(rnorm(100, mean=4, sd=2))
+```
+
+- you can learn more about R programming by looking at the definition of other people's functions
+- print the definition of a function the same as you print the value of any other variable
+
+```{r}
+hist.with.normal
+```
+
+## 2.3.1 Flow control
+
+- R is a true programming language
+    - conditional exectution
+    - looping
+- the following code computes $x = \sqrt{y}$ using Newton's method
+
+
+```{r}
+y <- 12345
+x <- y/2
+while (abs(x*x - y) > 1e-10) x <- (x + y/x)/2
+x
+x^2
+abs(x^2-y)
+```
+
+- a `while` loop executes a statement while a logical condition is `TRUE`
+- a `repeat` loop excutes a statement until you `break` out of it
+
+```{r}
+x <- y/2
+repeat {
+  x <- (x + y/x)/2
+  if (abs(x*x - y) < 1e-10) break
+}
+x
+```
+
+- here the `repeat` loop executes a **compound** statement which consists of several other statements enclosed by `{ }`
+- the `if` statement performs **conditional execution**
+- the `break` statement exits the enclosing loop
+
+- the break condition can be modified using `all()` to allow computation of a vector of results
+- this is less efficient since the loop only breaks when all results have converged so some results would be computed to a higher accuracy than required
+
+```{r}
+(y <- 1:10)
+x <- y/2
+repeat {
+  x <- (x + y/x)/2
+  if (all(abs(x*x - y) < 1e-10)) break
+}
+x
+x^2
+abs(x^2 - y)
+```
+
+- the `for` loop executes a statement for each value in a given set
+
+```{r}
+x <- seq(0,1,.05)
+plot(x, x, ylab="y", type="l")
+for (j in 2:8) lines(x, x^j)
+```
+
+- the `for` loop is executed with `j=2`, `j=3`, ..., `j=8`
+
+## 2.3.2 Classes and generic functions
+
+- in an **object-oriented** programming language each data object has a **class**
+- a class defines the **methods** that act on the objects of the class
+- different classes may contain methods of the same name, e.g. `print`
+- R has some object-oriented features
+- you can determine the class of an object using `class`
+
+```{r}
+class(TRUE)
+class(42)
+class("Ryerson")
+```
+
+- you can write a **generic function** by calling `UseMethod`
+
+```{r}
+print
+```
+
+- `UseMethod` calls the `print` method for the class of the object being printed
+- you can list all the `print` methods using `methods()`
+
+```{r}
+head(methods(print))
+```
+
+- for example, `t.test()` returns an object of class `htest` (hypothesis test)
+
+```{r}
+(x <- t.test(bmi, mu=22.5))
+class(x)
+x$p.value
+```
+
+- when an object of class `htest` is printed, the `print.htest()` method is called
+- if there is no `print` method for a class then `print.default` is called
+
+## 2.4 Data entry
+
+- this book uses example data sets provided by the `ISwR` package
+- to analyse your own data you have to read it into R somehow
+- you can read data from files, databases, the web
+- you can also enter data manually
+    - using `c()` is only practical for manually entering small data sets
+    - R provides a data editor for manually entering larger data sets
+
+## 2.4.1 Reading from a text file
+
+- the most convenient function for reading data files into R is `read.table()`
+- this function produces a new data frame
+- the function requires that the data set is stored in a plain, flat, ASCII text file
+    - create this type of file with a text editor like Notepad on Windows or TextEdit on Mac OS X
+- the first line of the file should contain a header that names the variables being measured
+- the items in each line are separated by blanks, tabs, or other delimiters
+- after the header (if present), each line of the file contains one row of data
+    - each data row contains the measurements for one experimental unit
+    - use the special value `NA` for missing data
+
+- the `ISwR` package includes some data files in its `rawdata` subdirectory
+- you can find the location of this subdirectory on your machine using `system.file()`
+- the data for `thuesen` is stored in the file `thuesen.txt`
+
+```{r}
+thuesen.txt <- system.file("rawdata/thuesen.txt", package = "ISwR")
+cat(readLines(thuesen.txt), sep="\n" )
+```
+
+- read this file into a new data frame
+    - use the argument `header=T` because the file has a header line
+
+```{r}
+thuesen2 <- read.table(thuesen.txt, header = T)
+thuesen2
+```
+
+- `read.table` assumes that any column that contains character data is a factor
+- for example, consider the file `secretin.txt` which corresponds to the `ISwR` data frame named `secretin`
+
+```{r}
+secretin.txt <- system.file("rawdata/secretin.txt", package = "ISwR")
+cat(readLines(secretin.txt), sep="\n" )
+```
+
+- note that row numbers are included
+- read the file:
+
+```{r}
+secretin2 <- read.table(secretin.txt)
+summary(secretin2)
+```
+
+- note that R detects that the first row is one item shorter than the rest which have row numbers, and intreprets it as a header
+- the first variable is numeric, the rest are factors
+
+- `read.table` orders the factor levels alphabetically, which may not be what you want
+- you may therefore need to reorder the factor levels after you read the file
+
+```{r}
+levels(secretin2$time)
+```
+
+## 2.4.2 Further details on `read.table`
+
+- `read.table` is very flexible and has many options
+- consult the help system for full details
+- here are some of the important options
+
+### File format details
+
+- specify the *field separator* using `sep=`
+- specify the *NA strings* using `na.strings=`
+- specify *quote* and *comment* delimiters using `quote=` and `comment.char`
+- specify the handling of *unequal field count* using `fill=` and `flush=`
+
+### Delimited file types
+
+- the a a few variants of `read.table` that set the options to common values
+    - these assume the first row is a header
+- `read.csv` reads Comma-Separated Values (CSV)
+- `read.csv2` is like `read.csv` except that comma is used as the decimal oint and semicolon is used as the field delimiter
+    - useful for data from European countries
+- `read.delim` is like `read.csv` except that TAB is the field delimiter
+- `read.delim2` is like `read.csv2` except that TAB is the field delimiter
+
+Function      | Decimal Point | Field Delimiter
+--------------|---------------|----------------
+`read.csv`    | PERIOD (.)    | COMMA (,)
+`read.csv2`   | COMMA (,)     | SEMICOLON (;)
+`read.delim`  | PERIOD (.)    | TAB
+`read.delim2` | COMMA (,)     | TAB
+
+
+### Conversion of input
+
+- control conversion of strings to factors using `stringsAsFactors=` and `as.is`
+- specify datatype of columns using `colClasses`
+    - improves efficiency
+    - skip unwanted columns using `NULL`
+
+## 2.4.3 The data editor
+
+- R has a spreadsheet-like user interface for editing data frames
+- edit the `airquality` data frame:
+
+```{r, eval=FALSE}
+aq <- edit(airquality)
+```
+
+- this assigns the edited data frame to a new data frame
+- you can edit a data frame in place using `fix()`
+
+- note that on Mac OS X you may see a error message like:
+"Error in check_for_XQuartz() : X11 library is missing: install XQuartz from xquartz.macosforge.org"
+    - download and install the X11 library from <http://www.xquartz.org>
+    
+### Recommendation
+
+- the data editor user interface is primitive compared to Excel
+- use Excel instead and save worksheet in CSV format
+
+## 2.4.4. Interfacing to other programs
+
+- you may need to move data between R and other programs
+- the simplest way to accomplish this is to export and import delimited text files in the other programs
+
+- you can also use the `foreign` package
+- it supports SPSS, SAS, Epi-Info, Stata, Systat, Minitab, and S-PLUS
+
+- on Unix/Linux systems open Excel files using OpenOffice and export as CSV
+
+- you can also use the Windows system clipboard
+- select tabular data in Excel, then copy to clipboard
+- then read the special "clipboard" file in R:
+
+```{r, eval=F}
+read.table("clipboard", header=T)
+```
+
+- you can read data from databases
+- use the `RODBC` package to read ODBC database connection
+- refer to "R Data Import/Export" <https://cran.r-project.org/doc/manuals/r-release/R-data.html>
+
+### Recommendation
+
+- text files are the simplest way to read data into R
+- export other formats to CSV
+- write database query results as CSV
+
+
+## 2.5 Exercises
+
+2.1 Describe how to insert a value between two elements of a vector at a given position by using the append function (use the help system to find out). Without append, how would you do it?
+
+- for example, consider this vector of some names:
+
+```{r}
+some.names <- c("Alberta", "British Columbia", "Ontario", "Quebec")
+```
+
+- insert more names between "British Columbia" and "Ontario" (after position 2):
+
+```{r}
+more.names <- c("Manitoba", "New Brunswick")
+```
+
+- Solution 1: Use `append()`
+
+```{r}
+append(some.names, more.names, after=2)
+```
+
+- Solution 2: Without `append()`
+
+```{r}
+c(some.names[1:2], more.names, some.names[3:4])
+```
+
+2.2 Write the built-in data set thuesen to a Tab-separated text file with write.table. View it with a text editor (depending on your system). Change the NA value to . (period), and read the changed file back into R with a suitable command. Also try importing the data into other applications of your choice and exporting them to a new file after editing. You may have to remove row names to make this work.
+
+```{r}
+write.table(thuesen, file="thuesen.txt", row.names=F, sep = '\t')
+cat(readLines("thuesen.txt"), sep="\n" )
+```
+
+- use a text editor to edit `thuesen.txt`, replacing `NA` with `.` (period), and save it as `thuesen-period.txt`
+- to make this totally automated, we'll do the editing using the string find and replace function `sub()`
+
+```{r}
+lines <- readLines("thuesen.txt")
+lines <- sub("NA", ".", lines)
+writeLines(lines, "thuesen-period.txt")
+cat(readLines("thuesen-period.txt"), sep="\n" )
+```
+
+- read `thuesen-period.txt` and print a summary
+
+```{r}
+summary(read.delim("thuesen-period.txt"))
+```
+
+- note that `short.velocity` is incorrectly interpretted as a factor
+
+- read `thuesen-period.txt` with the correct `NA` option and print a summary
+
+```{r}
+summary(read.delim("thuesen-period.txt", na.strings="."))
+```
+
+- now `short.velocity` is correctly interpretted as numeric
+
+END OF CHAPTER 2
